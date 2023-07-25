@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 const { getConn } = require("../db");
 
-// show all user
+// /users/
 router.get("/", async (req, res) => {
   try {
     const conn = await getConn();
@@ -16,7 +16,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// signup
+// /users/signup
 router.post("/signup", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -24,22 +24,23 @@ router.post("/signup", async (req, res) => {
     const checkQuery = "SELECT * FROM User WHERE email = ?";
     const [rows] = await conn.query(checkQuery, [email]);
     if (rows.length > 0) {
-      res
-        .status(400)
-        .send("Email already exists. Please use a different email.");
+      res.status(400).json({
+        message: "Email already exists. Please use a different email.",
+      });
     } else {
       const query = "INSERT INTO User (email, password) VALUES (?, ?)";
       await conn.query(query, [email, password]);
-      res.status(200).send("User added successfully");
+      console.log("User added success");
+      res.status(200).json({ message: "User added successfully" });
     }
     conn.release();
   } catch (err) {
     console.error(err);
-    res.status(500).send("Internal Server Error");
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
-//signin
+// /users/signin
 router.post("/signin", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -48,13 +49,13 @@ router.post("/signin", async (req, res) => {
     const [rows] = await conn.query(query, [email, password]);
     conn.release();
     if (rows.length > 0) {
-      res.status(200).send("Signin successful");
+      res.status(200).json({ message: "Signin successful" });
     } else {
-      res.status(401).send("Invalid email or password");
+      res.status(401).json({ message: "Invalid email or password" });
     }
   } catch (err) {
     console.error(err);
-    res.status(500).send("Internal Server Error");
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
