@@ -19,7 +19,8 @@ router.get("/", async (req, res) => {
 // /users/signup
 router.post("/signup", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    console.log(req.body);
+    const { email, password, mbti, username } = req.body;
     const conn = await getConn();
     const checkQuery = "SELECT * FROM User WHERE email = ?";
     const [rows] = await conn.query(checkQuery, [email]);
@@ -28,8 +29,8 @@ router.post("/signup", async (req, res) => {
         message: "Email already exists. Please use a different email.",
       });
     } else {
-      const query = "INSERT INTO User (email, password) VALUES (?, ?)";
-      await conn.query(query, [email, password]);
+      const query = "INSERT INTO User (email, password, mbti, username) VALUES (?, ?, ?, ?)";
+      await conn.query(query, [email, password, mbti, username]);
       console.log("User added success");
       res.status(200).json({ message: "User added successfully" });
     }
@@ -49,7 +50,8 @@ router.post("/signin", async (req, res) => {
     const [rows] = await conn.query(query, [email, password]);
     conn.release();
     if (rows.length > 0) {
-      res.status(200).json({ message: "Signin successful" });
+      const user = rows[0];
+      res.status(200).json({ message: "Signin successful", user });
     } else {
       res.status(401).json({ message: "Invalid email or password" });
     }
@@ -58,5 +60,6 @@ router.post("/signin", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
 
 module.exports = router;
