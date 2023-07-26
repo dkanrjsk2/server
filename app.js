@@ -5,6 +5,7 @@ var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
 var logger = require("morgan");
 
+const routes = require("./routes/routes");
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 var postsRouter = require("./routes/posts");
@@ -27,9 +28,13 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname, "../client/build")));
 
 // route path
+
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/posts", postsRouter);
+
+// connect react
+app.use(routes);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -44,7 +49,7 @@ app.use(function (err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render("error");
+  res.render("error", { title: "오류 페이지" });
 });
 
 module.exports = app;
