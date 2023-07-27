@@ -4,6 +4,7 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
 var logger = require("morgan");
+require('dotenv').config()
 
 const routes = require("./routes/routes");
 var indexRouter = require("./routes/index");
